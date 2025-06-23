@@ -1,0 +1,141 @@
+ Lightweight Feedback System — Full Assignment Breakdown
+ High-Level Plan
+Build a full-stack feedback system with Python backend and React frontend.
+
+Features include role-based access, feedback management, dashboards, and optional enhancements.
+
+ 1. Project Setup
+Frontend:
+
+React + TailwindCSS
+
+Pages: Login, Manager Dashboard, Employee Dashboard, Feedback Form
+
+Routing with role-based access
+
+Backend:
+
+Python (FastAPI recommended)
+
+RESTful API with endpoints for login, feedback CRUD, user/team data
+
+SQLite or PostgreSQL
+
+Dockerfile for backend is mandatory
+
+ 2. Database Design
+Tables:
+
+User: id, name, email, password, role ("manager"/"employee"), manager_id
+
+Feedback: id, employee_id, manager_id, strengths, improvement_areas, sentiment (positive/neutral/negative), timestamp, acknowledged (boolean), tags (optional)
+
+Optional:
+
+Comment: id, feedback_id, employee_id, comment, timestamp
+
+FeedbackRequest: id, employee_id, timestamp
+
+Notification: id, user_id, message, read (boolean)
+
+ 3. Core Features (MVP)
+Authentication & Roles
+
+ Simple login (can be mocked)
+
+ Roles: Manager and Employee
+
+ Access control per role
+
+Feedback System
+
+ Managers can create feedback for team members
+
+ Feedback includes: strengths, areas to improve, sentiment
+
+ Multiple feedback entries per employee
+
+ Feedback editable by manager
+
+Visibility
+
+ Managers see feedback for their team only
+
+ Employees see only their own feedback
+
+ Employees can acknowledge feedback
+
+Dashboards
+
+ Manager dashboard: team list, feedback count, sentiment trends
+
+ Employee dashboard: feedback timeline
+
+ 4. Bonus Features (Optional)
+ Employee can request feedback
+
+ Anonymous peer feedback with toggle
+
+ In-app or email notifications
+
+ Feedback tags (e.g., "communication", "leadership")
+
+ Export feedback to PDF
+
+ Employee comments on feedback
+
+ Markdown support in comments
+
+⚙️ 5. Tech Stack Guidelines
+Frontend
+
+React + Tailwind
+
+Axios or Fetch for API
+
+React Router for navigation
+
+Backend
+
+FastAPI (or Flask)
+
+Pydantic schemas
+
+SQLite/PostgreSQL
+
+RESTful APIs
+
+CORS
+
+Dockerized
+
+ 6. Deliverables
+ Fully working frontend + backend
+
+  Video demo (<5 mins) — show the product
+  Code walkthrough (<10 mins)
+
+  Public GitHub repo with:
+
+ README.md including:
+
+Setup instructions
+
+Stack & design decisions
+
+Docker instructions
+
+Mention AI assistance if used
+
+ Dockerfile for backend
+
+  Deployment (Vercel/Render/Railway) or clearly mentioned if unavailable
+
+ 7. Optional Extras
+ ERD or schema diagram in README
+
+ Unit tests (pytest + FastAPI TestClient)
+
+ Clean commit history
+
+ Screenshots or GIFs in README

@@ -1,0 +1,53 @@
+# Node
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.log
+instance/
+.env
+venv/
+.venv/
+
+# SQLite
+*.sqlite3
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.pid
+*.sock
+
+# Vite / CRA / React
+.vite/
+.cache/
+*.tsbuildinfo
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Testing
+coverage/
+pytest_cache/
+htmlcov/
+
+# Production
+*.tar
+*.zip
+
+# Misc
+*.bak
+*.tmp
+*.old
