@@ -5,6 +5,10 @@ from database import SessionLocal, engine
 from models import user, feedback, tags
 from models.tags import Tag
 
+from routes import user as user_routes
+
+
+
 app = FastAPI()
 
 
@@ -34,3 +38,4 @@ db.close()
 @app.get("/")
 def read_root():
     return {"msg": "Feedback System backend running 🚀"}
+app.include_router(user_routes.router)
