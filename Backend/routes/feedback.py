@@ -35,3 +35,4 @@ def update_feedback_route(
 ):
     updated_feedback = update_feedback(db, feedback_id, manager_id, update_data)
     return FeedbackOut.from_orm(updated_feedback)
+

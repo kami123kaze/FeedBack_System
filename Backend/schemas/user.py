@@ -4,7 +4,12 @@ from models.user import RoleEnum
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
+    password: str             # 
     role: RoleEnum
+
+class UserLogin(BaseModel):
+    email: EmailStr          
+    password: str
 
 class UserOut(BaseModel):
     id: int
@@ -13,4 +18,4 @@ class UserOut(BaseModel):
     role: RoleEnum
 
     class Config:
-        orm_mode = True 
+        orm_mode = True

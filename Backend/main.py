@@ -8,10 +8,11 @@ from models.tags import Tag
 from routes import user as user_routes
 from routes import feedback as feedback_routes
 
+from database import Base, engine
+
 
 
 app = FastAPI()
-
 
 user.Base.metadata.create_all(bind=engine)
 

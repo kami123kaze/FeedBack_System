@@ -30,6 +30,7 @@ class Feedback(Base):
 
     created_at = Column(DateTime, default=datetime.now)
  
+    acknowledged = Column(Boolean, default=False)
     
     manager = relationship("User", foreign_keys=[manager_id], backref="feedbacks_given")
     employee = relationship("User", foreign_keys=[employee_id], backref="feedbacks_received")

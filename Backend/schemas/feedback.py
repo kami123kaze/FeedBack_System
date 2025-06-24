@@ -21,7 +21,8 @@ class FeedbackOut(FeedbackBase):
     manager_id: int
     employee_id: int
     created_at: datetime
-    tags: List[TagOut] = []  
+    tags: List[TagOut] = []
+    acknowledged: bool  
     
     class Config:
         orm_mode = True
