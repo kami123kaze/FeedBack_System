@@ -6,6 +6,7 @@ from models import user, feedback, tags
 from models.tags import Tag
 
 from routes import user as user_routes
+from routes import feedback as feedback_routes
 
 
 
@@ -39,3 +40,4 @@ db.close()
 def read_root():
     return {"msg": "Feedback System backend running 🚀"}
 app.include_router(user_routes.router)
+app.include_router(feedback_routes.router)
