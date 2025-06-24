@@ -33,6 +33,7 @@ class FeedbackUpdate(BaseModel):
     sentiment: Optional[SentimentEnum] = None
     comment: Optional[str] = None
     tag_ids: Optional[List[int]] = []
+    acknowledged: Optional[bool] = None
     
 
     class Config:

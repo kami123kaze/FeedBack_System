@@ -54,6 +54,10 @@ def update_feedback(db: Session, feedback_id: int, manager_id: int, update_data:
     if update_data.tag_ids:
         tags = db.query(Tag).filter(Tag.id.in_(update_data.tag_ids)).all()
         feedback.tags = tags
+        
+    if update_data.acknowledged is not None:
+       feedback.acknowledged = update_data.acknowledged
+    
  
     db.commit()
     db.refresh(feedback)
