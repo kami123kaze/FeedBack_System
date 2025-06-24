@@ -4,6 +4,8 @@ from database import Base
 import enum
 from datetime import datetime
 from models.tags import feedback_tags
+from sqlalchemy import Boolean
+
 
 
 class SentimentEnum(enum.Enum):
@@ -27,7 +29,7 @@ class Feedback(Base):
     comment = Column(Text, nullable=True)
 
     created_at = Column(DateTime, default=datetime.now)
-
+ 
     
     manager = relationship("User", foreign_keys=[manager_id], backref="feedbacks_given")
     employee = relationship("User", foreign_keys=[employee_id], backref="feedbacks_received")

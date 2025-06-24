@@ -22,6 +22,17 @@ class FeedbackOut(FeedbackBase):
     employee_id: int
     created_at: datetime
     tags: List[TagOut] = []  
+    
+    class Config:
+        orm_mode = True
+
+  
+class FeedbackUpdate(BaseModel):
+    text: Optional[str] = None
+    sentiment: Optional[SentimentEnum] = None
+    comment: Optional[str] = None
+    tag_ids: Optional[List[int]] = []
+    
 
     class Config:
         orm_mode = True
