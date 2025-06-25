@@ -1,7 +1,7 @@
-from database import SessionLocal
-from models.user import User, RoleEnum
-from models.feedback import Feedback, SentimentEnum
-from models.tags import Tag
+from backend.database import SessionLocal
+from backend.models.user import User, RoleEnum
+from backend.models.feedback import Feedback, SentimentEnum
+from backend.models.tags import Tag
 
 db = SessionLocal()
 

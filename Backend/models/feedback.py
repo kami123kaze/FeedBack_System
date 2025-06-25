@@ -1,9 +1,9 @@
 from sqlalchemy import Column, Integer, Text, Enum, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-from database import Base
+from backend.database import Base
 import enum
 from datetime import datetime
-from models.tags import feedback_tags
+from backend.models.tags import feedback_tags
 from sqlalchemy import Boolean
 
 

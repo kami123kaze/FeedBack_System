@@ -1,14 +1,14 @@
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
+from backend import schemas
+from backend.database import SessionLocal, engine
+from backend.models import user, feedback, tags
+from backend.models.tags import Tag
 
-from database import SessionLocal, engine
-from models import user, feedback, tags
-from models.tags import Tag
+from backend.routes import user as user_routes
+from backend.routes import feedback as feedback_routes
 
-from routes import user as user_routes
-from routes import feedback as feedback_routes
-
-from database import Base, engine
+from backend.database import Base, engine
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -30,7 +30,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-user.Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
+
 
 
 def seed_default_tags(session: Session):

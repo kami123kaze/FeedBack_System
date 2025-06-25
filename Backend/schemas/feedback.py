@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
-from models.feedback import SentimentEnum
+from backend.models.feedback import SentimentEnum
 
-from models.tags import Tag
-from schemas.tags import TagOut
+from backend.models.tags import Tag
+from backend.schemas.tags import TagOut
 
 class FeedbackBase(BaseModel):
     text: str
@@ -23,6 +23,7 @@ class FeedbackOut(FeedbackBase):
     created_at: datetime
     tags: List[TagOut] = []
     acknowledged: bool  
+    name: str
     
     class Config:
         orm_mode = True

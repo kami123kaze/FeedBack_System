@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from models.user import RoleEnum
+from backend.models.user import RoleEnum
 
 class UserCreate(BaseModel):
     name: str

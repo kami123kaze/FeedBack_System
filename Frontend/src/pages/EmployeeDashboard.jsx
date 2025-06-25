@@ -1,83 +1,139 @@
 
 import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
-import axios from "axios";
+import client from "../api/clinet";                   
 
 const EmployeeDashboard = () => {
-  const { token, user } = useContext(AuthContext);
+  const { user, token, setToken, setUser } = useContext(AuthContext);
   const [feedbacks, setFeedbacks] = useState([]);
+  const [loading, setLoading]     = useState(true);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
+      if (!token || !user?.id) return;                // guard
       try {
-        const res = await axios.get(
-          `http://localhost:8000/feedbacks/employee/${user.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setFeedbacks(res.data);
+        const { data } = await client.get(`/feedbacks/employee/${user.id}`);
+        setFeedbacks(data);
       } catch (err) {
         console.error("Failed to fetch feedbacks:", err);
+      } finally {
+        setLoading(false);
       }
     };
+    fetchFeedbacks();
+  }, [token, user?.id]);
 
-    if (user?.id) fetchFeedbacks();
-  }, [user, token]);
-  console.log("User in context:", user);
-console.log("Token:", token);
+  /* ------------ logout ------------ */
+  const handleLogout = () => {
+    setToken(null);
+    setUser(null);
+    navigate("/login");
+  };
 
-  const acknowledgeFeedback = async (feedbackId) => {
+  /* ------------ acknowledge ------------ */
+  const acknowledgeFeedback = async (id) => {
     try {
-      await axios.put(
-        `http://localhost:8000/feedbacks/${feedbackId}`,
-        { acknowledged: true },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
+      await client.put(`/feedbacks/${id}`, { acknowledged: true });
       setFeedbacks((prev) =>
-        prev.map((fb) =>
-          fb.id === feedbackId ? { ...fb, acknowledged: true } : fb
-        )
+        prev.map((fb) => (fb.id === id ? { ...fb, acknowledged: true } : fb))
       );
     } catch (err) {
       console.error("Failed to acknowledge:", err);
     }
   };
 
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Employee Dashboard</h1>
-      {feedbacks.length === 0 ? (
-        <p>No feedbacks yet.</p>
-      ) : (
-        <div className="space-y-4">
-          {feedbacks.map((fb) => (
-            <div key={fb.id} className="p-4 bg-white rounded shadow">
-              <p><strong>Text:</strong> {fb.text}</p>
-              <p><strong>Sentiment:</strong> {fb.sentiment}</p>
-              <p><strong>Comment:</strong> {fb.comment}</p>
-              <p><strong>Tags:</strong> {fb.tags.map((tag) => tag.name).join(", ")}</p>
-              <p><strong>Acknowledged:</strong> {fb.acknowledged ? "Yes" : "No"}</p>
 
-              {!fb.acknowledged && (
-                <button
-                  onClick={() => acknowledgeFeedback(fb.id)}
-                  className="mt-2 px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Acknowledge
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+  const sentimentBorder = (s) =>
+    s === "positive"
+      ? "border-emerald-500"
+      : s === "negative"
+      ? "border-rose-500"
+      : "border-gray-400";
+
+  /* ------------ UI ------------ */
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-100">
+        <span className="animate-pulse text-xl font-semibold text-slate-600">
+          Loading…
+        </span>
+      </div>
+    );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      {/* top bar */}
+      <header className="sticky top-0 flex items-center justify-between px-6 py-4 bg-white shadow-sm">
+        <h1 className="text-xl font-bold text-slate-800">
+          Welcome, {user?.name || user?.email}
+        </h1>
+        <button
+          onClick={handleLogout}
+          className="rounded-lg bg-indigo-600 px-4 py-1 text-white hover:bg-indigo-700"
+        >
+          Log&nbsp;out
+        </button>
+      </header>
+
+      {/* content */}
+      <main className="p-6">
+        {feedbacks.length === 0 ? (
+          <p className="text-slate-600">You have no feedback yet.</p>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {feedbacks.map((fb) => (
+              <div
+                key={fb.id}
+                className={`relative rounded-xl bg-white p-6 shadow-lg border-l-4 ${sentimentBorder(
+                  fb.sentiment
+                )}`}
+              >
+                
+                <p className="text-sm text-slate-500 mb-1">
+                  <strong>Employee ID:</strong> {fb.employee_id}
+                </p>
+                <p className="text-sm text-slate-500 mb-2">
+                  <strong>Name:</strong> {fb.name}
+                </p>
+
+                <p className="mb-2 text-slate-700">{fb.text}</p>
+
+                <ul className="mb-3 space-y-1 text-sm text-slate-600">
+                  <li>
+                    <strong>Sentiment:</strong> {fb.sentiment}
+                  </li>
+                  {fb.comment && (
+                    <li>
+                      <strong>Comment:</strong> {fb.comment}
+                    </li>
+                  )}
+                  {fb.tags?.length > 0 && (
+                    <li>
+                      <strong>Tags:</strong> {fb.tags.map((t) => t.name).join(", ")}
+                    </li>
+                  )}
+                  <li>
+                    <strong>Acknowledged:</strong>{" "}
+                    {fb.acknowledged ? "Yes" : "No"}
+                  </li>
+                </ul>
+
+                {!fb.acknowledged && (
+                  <button
+                    onClick={() => acknowledgeFeedback(fb.id)}
+                    className="absolute bottom-4 right-4 rounded bg-indigo-600 px-3 py-1 text-sm text-white hover:bg-indigo-700"
+                  >
+                    Acknowledge
+                  </button>
+                )}
+              </div>
+            ))}
+                      </div>
+        )}
+      </main>
     </div>
   );
 };
