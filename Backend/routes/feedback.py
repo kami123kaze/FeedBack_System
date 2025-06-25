@@ -114,3 +114,17 @@ def acknowledge_feedback_route(
     db.commit()
     db.refresh(fb)
     return fb
+
+@router.delete("/{feedback_id}", status_code=204)
+def delete_feedback_route(
+    feedback_id: int,
+    db: Session = Depends(get_db),
+    current_user = Depends(require_manager),
+):
+    fb = db.query(Feedback).filter(Feedback.id == feedback_id).first()
+    if not fb:
+        raise HTTPException(status_code=404, detail="Feedback not found")
+    if fb.manager_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
+    db.delete(fb)
+    db.commit()
