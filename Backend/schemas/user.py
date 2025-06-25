@@ -4,7 +4,7 @@ from models.user import RoleEnum
 class UserCreate(BaseModel):
     name: str
     email: EmailStr
-    password: str             # 
+    password: str             
     role: RoleEnum
 
 class UserLogin(BaseModel):
