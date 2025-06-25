@@ -122,25 +122,65 @@ const ManagerDashboard = () => {
             <p className="text-slate-600">No feedback sent yet.</p>
           ) : (
             <div className="space-y-3">
-              {feedbacks.map((fb) => (
-                <div
-                  key={fb.id}
-                  className="rounded-xl bg-white p-4 shadow border border-slate-200"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-slate-800">
-                        To employee #{fb.employee_id}
-                      </h3>
-                      <p className="text-slate-600 text-sm">{fb.comment}</p>
+             {feedbacks.map((fb) => (
+                    <div
+                      key={fb.id}
+                      className="rounded-xl bg-white p-4 shadow border border-slate-200"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-semibold text-slate-800 mb-1">
+                            To: employee #{fb.employee_id}
+                          </h3>
+                          <p className="text-sm text-slate-700">
+                            <span className="font-medium">Feedback:</span> {fb.text}
+                          </p>
+                          <p className="text-sm text-slate-700 mt-1">
+                            <span className="font-medium">Sentiment:</span>{" "}
+                            <span
+                              className={
+                                fb.sentiment === "positive"
+                                  ? "text-green-600"
+                                  : fb.sentiment === "negative"
+                                  ? "text-rose-600"
+                                  : "text-yellow-600"
+                              }
+                            >
+                              {fb.sentiment}
+                            </span>
+                          </p>
+                          {fb.comment && (
+                            <p className="text-sm text-slate-700 mt-1">
+                              <span className="font-medium">Comment:</span> {fb.comment}
+                            </p>
+                          )}
+                          <p className="text-sm text-slate-700 mt-1">
+                            <span className="font-medium">Acknowledged:</span>{" "}
+                            {fb.acknowledged ? (
+                              <span className="text-green-600">Yes</span>
+                            ) : (
+                              <span className="text-rose-600">No</span>
+                            )}
+                          </p>
+                          {fb.tags?.length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {fb.tags.map((tag) => (
+                                <span
+                                  key={tag.id}
+                                  className="text-xs bg-slate-200 text-slate-700 rounded-full px-2 py-0.5"
+                                >
+                                  {tag.name}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-xs italic text-slate-500">
+                          {new Date(fb.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-xs italic text-slate-500">
-                      {new Date(fb.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-      
-                </div>
-              ))}
+))}
             </div>
           )}
         </section>

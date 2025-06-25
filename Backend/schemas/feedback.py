@@ -23,7 +23,6 @@ class FeedbackOut(FeedbackBase):
     created_at: datetime
     tags: List[TagOut] = []
     acknowledged: bool  
-    name: str
     
     class Config:
         orm_mode = True
