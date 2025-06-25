@@ -40,17 +40,16 @@ def create_feedback(db: Session, feedback_data: FeedbackCreate) -> Feedback:
 
 
 def get_feedbacks_for_employee(db: Session, employee_id: int) -> List[FeedbackOut]:
-    
     rows = (
-        db.query(Feedback, User.name.label("name"))
-        .join(User, User.id == Feedback.employee_id)
+        db.query(Feedback, User.name.label("manager_name"))
+        .join(User, User.id == Feedback.manager_id)  
         .filter(Feedback.employee_id == employee_id)
         .all()
     )
 
     result: List[FeedbackOut] = []
-    for fb, name in rows:
-        fb.name = name                     
+    for fb, manager_name in rows:
+        fb.manager_name = manager_name  
         result.append(FeedbackOut.from_orm(fb))
 
     return result

@@ -15,9 +15,10 @@ from backend.crud.feedback import (
     get_feedbacks_for_employee,  
     update_feedback,
 )
-from backend.dependencies import require_manager, get_current_user
+from backend.dependencies import require_manager, get_current_user,require_employee
 from backend.models.feedback import Feedback
 from backend.models.user import User, RoleEnum
+
 
 router = APIRouter(prefix="/feedbacks", tags=["Feedback"])
 
@@ -95,3 +96,21 @@ def update_feedback_route(
         update_data,
     )
     return FeedbackOut.from_orm(updated_feedback)
+
+
+@router.put("/acknowledge/{feedback_id}", response_model=FeedbackOut)
+def acknowledge_feedback_route(
+    feedback_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_employee),
+):
+    fb = db.query(Feedback).filter(Feedback.id == feedback_id).first()
+    if not fb:
+        raise HTTPException(status_code=404, detail="Feedback not found")
+    if fb.employee_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not your feedback")
+
+    fb.acknowledged = True
+    db.commit()
+    db.refresh(fb)
+    return fb

@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
-import client from "../api/clinet";                   
+import client from "../api/clinet";
 
 const EmployeeDashboard = () => {
   const { user, token, setToken, setUser } = useContext(AuthContext);
@@ -13,7 +12,7 @@ const EmployeeDashboard = () => {
 
   useEffect(() => {
     const fetchFeedbacks = async () => {
-      if (!token || !user?.id) return;                // guard
+      if (!token || !user?.id) return;
       try {
         const { data } = await client.get(`/feedbacks/employee/${user.id}`);
         setFeedbacks(data);
@@ -26,19 +25,20 @@ const EmployeeDashboard = () => {
     fetchFeedbacks();
   }, [token, user?.id]);
 
-  /* ------------ logout ------------ */
+
   const handleLogout = () => {
     setToken(null);
     setUser(null);
     navigate("/login");
   };
 
-  /* ------------ acknowledge ------------ */
   const acknowledgeFeedback = async (id) => {
     try {
-      await client.put(`/feedbacks/${id}`, { acknowledged: true });
-      setFeedbacks((prev) =>
-        prev.map((fb) => (fb.id === id ? { ...fb, acknowledged: true } : fb))
+      await client.put(`/feedbacks/acknowledge/${id}`);
+      setFeedbacks(prev =>
+        prev.map(fb =>
+          fb.id === id ? { ...fb, acknowledged: true } : fb
+        )
       );
     } catch (err) {
       console.error("Failed to acknowledge:", err);
@@ -53,8 +53,8 @@ const EmployeeDashboard = () => {
       ? "border-rose-500"
       : "border-gray-400";
 
-  /* ------------ UI ------------ */
-  if (loading)
+
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-100">
         <span className="animate-pulse text-xl font-semibold text-slate-600">
@@ -62,10 +62,12 @@ const EmployeeDashboard = () => {
         </span>
       </div>
     );
+  }
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      {/* top bar */}
+
       <header className="sticky top-0 flex items-center justify-between px-6 py-4 bg-white shadow-sm">
         <h1 className="text-xl font-bold text-slate-800">
           Welcome, {user?.name || user?.email}
@@ -78,7 +80,7 @@ const EmployeeDashboard = () => {
         </button>
       </header>
 
-      {/* content */}
+      {/* Content */}
       <main className="p-6">
         {feedbacks.length === 0 ? (
           <p className="text-slate-600">You have no feedback yet.</p>
@@ -91,15 +93,14 @@ const EmployeeDashboard = () => {
                   fb.sentiment
                 )}`}
               >
-                
+
                 <p className="text-sm text-slate-500 mb-1">
-                  <strong>Employee ID:</strong> {fb.employee_id}
-                </p>
-                <p className="text-sm text-slate-500 mb-2">
-                  <strong>Name:</strong> {fb.name}
+                  <strong>Manager:</strong>{" "}
+                  {fb.manager_name || `#${fb.manager_id}`}
                 </p>
 
                 <p className="mb-2 text-slate-700">{fb.text}</p>
+
 
                 <ul className="mb-3 space-y-1 text-sm text-slate-600">
                   <li>
@@ -112,7 +113,8 @@ const EmployeeDashboard = () => {
                   )}
                   {fb.tags?.length > 0 && (
                     <li>
-                      <strong>Tags:</strong> {fb.tags.map((t) => t.name).join(", ")}
+                      <strong>Tags:</strong>{" "}
+                      {fb.tags.map((t) => t.name).join(", ")}
                     </li>
                   )}
                   <li>
@@ -131,7 +133,7 @@ const EmployeeDashboard = () => {
                 )}
               </div>
             ))}
-                      </div>
+          </div>
         )}
       </main>
     </div>
