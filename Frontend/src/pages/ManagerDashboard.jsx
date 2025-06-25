@@ -1,52 +1,150 @@
 import React, { useEffect, useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
-import axios from "axios";
+import client from "../api/clinet";
 
 const ManagerDashboard = () => {
-  const { token, user } = useContext(AuthContext);
-  const [feedbacks, setFeedbacks] = useState([]);
+  const { user, setToken, setUser } = useContext(AuthContext);
+  const [employees, setEmployees]   = useState([]);
+  const [feedbacks, setFeedbacks]   = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const navigate = useNavigate();
 
+  
   useEffect(() => {
-    const fetchFeedbacks = async () => {
+    if (!user?.id) return;
+
+    const fetchData = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:8000/feedbacks/manager/${user.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setFeedbacks(res.data);
+       
+        const { data: users }   = await client.get("/users/");
+        const onlyEmployees     = users.filter(u => u.role === "employee");
+        setEmployees(onlyEmployees);
+
+      
+        const { data: fbacks }  = await client.get(`/feedbacks/manager/${user.id}`);
+        setFeedbacks(fbacks);
       } catch (err) {
-        console.error("Error fetching feedbacks:", err);
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (user?.id) fetchFeedbacks();
-  }, [user, token]);
+    fetchData();
+  }, [user?.id]);
+
+
+  const handleLogout = () => {
+    setToken(null);
+    setUser(null);
+    navigate("/login");
+  };
+
+  
+
+
+  const teamEmployees = employees.filter(e => e.manager_id === user.id);
+
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-slate-100">
+        <span className="animate-pulse text-xl font-semibold text-slate-600">
+          Loading…
+        </span>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Manager Dashboard</h1>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
 
-      {feedbacks.length === 0 ? (
-        <p>No feedbacks yet.</p>
-      ) : (
-        <div className="space-y-4">
-          {feedbacks.map((fb) => (
-            <div key={fb.id} className="p-4 bg-white rounded shadow">
-              <p><strong>Employee ID:</strong> {fb.employee_id}</p>
-              <p><strong>Name:</strong> {fb.name}</p>
-             
-              <p><strong>Sentiment:</strong> {fb.sentiment}</p>
-              <p><strong>Text:</strong> {fb.text}</p>
-              <p><strong>Comment:</strong> {fb.comment}</p>
-              <p><strong>Acknowledged:</strong> {fb.acknowledged ? "Yes" : "No"}</p>
+
+      <header className="sticky top-0 flex items-center justify-between px-6 py-4 bg-white shadow-sm">
+        <h1 className="text-xl font-bold text-slate-800">
+          Manager: {user?.name || user?.email}
+        </h1>
+        <button
+          onClick={handleLogout}
+          className="rounded-lg bg-rose-600 px-4 py-1 text-white hover:bg-rose-700"
+        >
+          Log&nbsp;out
+        </button>
+      </header>
+
+    
+      <main className="p-6 space-y-10">
+
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-slate-700">Your Team</h2>
+            <button
+              onClick={() => navigate("/manager/employees")}
+              className="rounded bg-indigo-600 px-3 py-1 text-sm text-white hover:bg-indigo-700"
+            >
+              Manage Employees
+            </button>
+          </div>
+
+          {teamEmployees.length === 0 ? (
+            <p className="text-slate-600">You haven’t added anyone yet.</p>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {teamEmployees.map((emp) => (
+                <div
+                  key={emp.id}
+                  className="rounded-xl bg-white p-5 shadow border border-slate-200"
+                >
+                  <h3 className="text-lg font-bold text-slate-800">
+                    {emp.name}
+                  </h3>
+                  <p className="text-slate-600 text-sm">{emp.email}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          )}
+        </section>
+
+
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-slate-700">Your Feedback</h2>
+            <button
+              onClick={() => navigate("/feedback/new")}
+              className="rounded bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700"
+            >
+              Create Feedback
+            </button>
+          </div>
+
+          {feedbacks.length === 0 ? (
+            <p className="text-slate-600">No feedback sent yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {feedbacks.map((fb) => (
+                <div
+                  key={fb.id}
+                  className="rounded-xl bg-white p-4 shadow border border-slate-200"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="font-medium text-slate-800">
+                        To employee #{fb.employee_id}
+                      </h3>
+                      <p className="text-slate-600 text-sm">{fb.comment}</p>
+                    </div>
+                    <span className="text-xs italic text-slate-500">
+                      {new Date(fb.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+      
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </main>
     </div>
   );
 };

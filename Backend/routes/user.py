@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.database import SessionLocal
-from backend.crud.user import create_user, get_users, authenticate_user
+from backend.crud.user import create_user, get_users, authenticate_user,update_user_manager
 from backend.schemas.user import UserCreate, UserOut, UserLogin
 from backend.utils.jwt import create_access_token
 from backend.dependencies import get_current_user
 from datetime import datetime, timedelta
+from backend.dependencies import require_manager
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -40,3 +41,14 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
 def get_me(current_user: UserOut = Depends(get_current_user)):
     return current_user
 
+@router.put(
+    "/{employee_id}/assign-manager/{manager_id}",
+    response_model=UserOut
+)
+def assign_manager(
+    employee_id: int,
+    manager_id: int,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_manager),
+):
+    return update_user_manager(db, employee_id, manager_id)

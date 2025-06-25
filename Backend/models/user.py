@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Enum
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey
 from backend.database import Base
+from sqlalchemy.orm import relationship
 import enum
 
 class RoleEnum(enum.Enum):
@@ -14,3 +15,7 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     role = Column(Enum(RoleEnum), nullable=False)
     password = Column(String, nullable=False)
+    manager_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    manager = relationship("User", remote_side=[id], backref="employees")
+
+

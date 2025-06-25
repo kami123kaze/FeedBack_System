@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import ManagerDashboard from "./pages/ManagerDashboard";
+import ManageEmployees from './pages/ManageEmployees';
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import  AuthContext  from "./context/AuthContext";
 import { useContext } from 'react';
@@ -17,6 +18,8 @@ export default function App() {
       <Route path="/Manager" element={
                user?.role === "manager" ? <ManagerDashboard /> : <Navigate to="/" />
        } />
+        <Route path="/Manager/employees" element={<ManageEmployees />}/>
+
       <Route path="/Employee" element={<EmployeeDashboard />} />
     </Routes>
   );
