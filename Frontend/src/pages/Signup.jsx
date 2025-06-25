@@ -5,7 +5,7 @@ import AuthContext from "../context/AuthContext";
 
 export default function Signup() {
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext);
+  const { setToken, setUser } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     name: "",
@@ -28,6 +28,7 @@ export default function Signup() {
       
       const { access_token } = await loginRequest(form.email, form.password);
       localStorage.setItem("token", access_token);
+      setToken(access_token);   
 
       const me = await fetchMe();
       setUser(me);

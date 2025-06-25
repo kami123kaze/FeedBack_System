@@ -35,6 +35,7 @@ class FeedbackUpdate(BaseModel):
     tag_ids: Optional[List[int]] = []
     acknowledged: Optional[bool] = None
     
-
+class FeedbackOutWithName(FeedbackOut):
+    name: str
     class Config:
         orm_mode = True

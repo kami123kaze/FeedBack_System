@@ -11,7 +11,9 @@ from models.user import RoleEnum
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    print("RAW JWT:", token)  
     payload = verify_token(token)
+    print("DECODED PAYLOAD:", payload) 
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
     

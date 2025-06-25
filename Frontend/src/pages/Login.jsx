@@ -5,11 +5,12 @@ import AuthContext from '../context/AuthContext'
 
 export default function Login() {
   const navigate = useNavigate();
-  const { setUser } = useContext(AuthContext);
+  
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { setToken, setUser } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,6 +18,7 @@ export default function Login() {
     try {
       const { access_token } = await loginRequest(email, password);
       localStorage.setItem("token", access_token);
+      setToken(access_token);    
 
       const me = await fetchMe();
       setUser(me);
