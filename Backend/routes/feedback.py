@@ -8,6 +8,7 @@ router = APIRouter(prefix="/feedbacks", tags=["Feedback"])
 from models.feedback import Feedback   
 from models.user import User 
 from typing import List
+from models.user import RoleEnum
 
 
 def get_db():
@@ -34,7 +35,7 @@ def get_feedback_for_employee_route(
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user),
 ):
-    if current_user.role != "employee" or current_user.id != employee_id:
+    if current_user.role != RoleEnum.employee or current_user.id != employee_id:
         raise HTTPException(status_code=403, detail="Not authorized to view this feedback")
     
     return get_feedback_for_employee(db, employee_id)

@@ -20,7 +20,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     user = get_user_by_email(db, payload.get("sub"))
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+    print("RESOLVED USER:", user.id, user.role)
     return user
 
 def require_manager(current_user = Depends(get_current_user)):
