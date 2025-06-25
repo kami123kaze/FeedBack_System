@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from backend.database import SessionLocal
 from backend.crud.user import create_user, get_users, authenticate_user,update_user_manager
 from backend.schemas.user import UserCreate, UserOut, UserLogin
+from backend.models.user import User
 from backend.utils.jwt import create_access_token
 from backend.dependencies import get_current_user
 from datetime import datetime, timedelta
@@ -52,3 +53,16 @@ def assign_manager(
     current_user=Depends(require_manager),
 ):
     return update_user_manager(db, employee_id, manager_id)
+
+@router.put("/{employee_id}/unassign", response_model=UserOut)
+def unassign_manager_from_employee(
+    employee_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_manager),
+):
+    emp = db.query(User).filter(User.id == employee_id).first()
+
+    emp.manager_id = None
+    db.commit()
+    db.refresh(emp)
+    return emp

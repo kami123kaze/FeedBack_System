@@ -10,6 +10,18 @@ const ManagerDashboard = () => {
   const [loading, setLoading]       = useState(true);
   const navigate = useNavigate();
 
+const removeFromTeam = async (emp) => {
+      try {
+        await client.put(`/users/${emp.id}/unassign`);
+        setEmployees(prev =>
+          prev.map(e =>
+            e.id === emp.id ? { ...e, manager_id: null } : e
+          )
+        );
+      } catch (err) {
+        console.error("Failed to unassign:", err);
+      }
+  };
   
   useEffect(() => {
     if (!user?.id) return;
@@ -91,18 +103,29 @@ const ManagerDashboard = () => {
             <p className="text-slate-600">You haven’t added anyone yet.</p>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {teamEmployees.map((emp) => (
-                <div
-                  key={emp.id}
-                  className="rounded-xl bg-white p-5 shadow border border-slate-200"
-                >
-                  <h3 className="text-lg font-bold text-slate-800">
-                    {emp.name}
-                  </h3>
-                  <p className="text-slate-600 text-sm">{emp.email}</p>
-                </div>
-              ))}
-            </div>
+                {teamEmployees.map(emp => (
+                      <div
+                        key={emp.id}
+                        className="relative overflow-hidden rounded-xl bg-white p-5 shadow
+                                  border border-slate-200"
+                      >
+                        {/* X button */}
+                        <button
+                          onClick={() => removeFromTeam(emp)}
+                          title="Remove from team"
+                          className="absolute top-3 right-3 flex h-7 w-7 items-center justify-center
+                                    rounded-full border border-rose-300 bg-rose-50 text-rose-600
+                                    hover:bg-rose-600 hover:text-white transition"
+                        >
+                          &times;
+                        </button>
+
+                        {/* Employee info */}
+                        <h3 className="mt-1 text-lg font-bold text-slate-800">{emp.name}</h3>
+                        <p className="text-slate-600 text-sm">{emp.email}</p>
+                      </div>
+                    ))}
+</div>
           )}
         </section>
 
