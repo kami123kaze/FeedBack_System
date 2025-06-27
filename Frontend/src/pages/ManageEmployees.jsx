@@ -6,7 +6,7 @@ import client from "../api/clinet";
 const ManageEmployees = () => {
   const { user } = useContext(AuthContext);
   const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading]   = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -15,8 +15,7 @@ const ManageEmployees = () => {
     const fetchEmployees = async () => {
       try {
         const { data } = await client.get("/users/");
-        const onlyEmployees = data.filter((u) => u.role === "employee");
-        setEmployees(onlyEmployees);
+        setEmployees(data.filter(u => u.role === "employee"));
       } catch (err) {
         console.error("Failed to load employees:", err);
       } finally {
@@ -30,8 +29,8 @@ const ManageEmployees = () => {
   const handleAddToTeam = async (employeeId) => {
     try {
       await client.put(`/users/${employeeId}/assign-manager/${user.id}`);
-      setEmployees((prev) =>
-        prev.map((e) =>
+      setEmployees(prev =>
+        prev.map(e =>
           e.id === employeeId ? { ...e, manager_id: user.id } : e
         )
       );
@@ -40,7 +39,7 @@ const ManageEmployees = () => {
     }
   };
 
-  const unassigned = employees.filter((e) => !e.manager_id);
+  const unassigned = employees.filter(e => !e.manager_id);
 
   if (loading) {
     return (
@@ -68,12 +67,14 @@ const ManageEmployees = () => {
           <h2 className="text-lg font-semibold text-white/90">Unassigned</h2>
 
           {unassigned.length === 0 ? (
-            <p className="text-white/60">
-              Everyone already has a manager 🎉
-            </p>
+            employees.length === 0 ? (
+              <p className="text-white/60">There are no employees.</p>
+            ) : (
+              <p className="text-white/60">Everyone already has a manager </p>
+            )
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {unassigned.map((emp) => (
+              {unassigned.map(emp => (
                 <div
                   key={emp.id}
                   className="relative rounded-xl p-5 bg-white/5 border border-white/10 backdrop-blur-md shadow hover:shadow-lg transition"
@@ -93,34 +94,44 @@ const ManageEmployees = () => {
           )}
         </section>
 
-        {/* All Employees Section */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-white/90">All Employees</h2>
 
-          {employees.length === 0 ? (
-            <p className="text-white/60">No employees found.</p>
-          ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {employees.map((emp) => (
-                <div
-                  key={emp.id}
-                  className="rounded-xl p-5 bg-white/5 border border-white/10 backdrop-blur-md shadow hover:shadow-lg transition"
-                >
-                  <h3 className="text-lg font-bold text-white">{emp.name}</h3>
-                  <p className="text-white/70 text-sm">{emp.email}</p>
-                  <p className="text-white/60 text-sm mt-2">
-                    <strong>Manager:</strong>{" "}
-                    {emp.manager_id
-                      ? emp.manager_id === user.id
-                        ? "You"
-                        : `Manager ID ${emp.manager_id}`
-                      : "Not Assigned"}
-                  </p>
+            <section className="space-y-4">
+              <h2 className="text-lg font-semibold text-white/90">All Employees</h2>
+
+              {employees.length === 0 ? (
+                <p className="text-white/60">There are no employees.</p>
+              ) : (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                  {employees.map(emp => (
+                    <div
+                      key={emp.id}
+                      className="rounded-xl p-5 bg-white/5 border border-white/10 backdrop-blur-md shadow hover:shadow-lg transition"
+                    >
+                      {/* 👇 name turns emerald if this employee is on your team */}
+                      <h3
+                        className={`text-lg font-bold ${
+                          emp.manager_id === user.id ? "text-emerald-400" : "text-white"
+                        }`}
+                      >
+                        {emp.name}
+                      </h3>
+
+                      <p className="text-white/70 text-sm">{emp.email}</p>
+
+                      <p className="text-white/60 text-sm mt-2">
+                        <strong>Manager:</strong>{" "}
+                        {emp.manager_id
+                          ? emp.manager_id === user.id
+                            ? "You"
+                            : `Manager ID ${emp.manager_id}`
+                          : "Not Assigned"}
+                      </p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
+              )}
+          </section>
+
       </main>
     </div>
   );

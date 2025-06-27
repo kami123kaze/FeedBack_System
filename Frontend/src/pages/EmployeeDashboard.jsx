@@ -7,8 +7,10 @@ const EmployeeDashboard = () => {
   const { user, token, setToken, setUser } = useContext(AuthContext);
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortOption, setSortOption] = useState("latest"); 
   const navigate = useNavigate();
 
+  
   useEffect(() => {
     const fetchFeedbacks = async () => {
       if (!token || !user?.id) return;
@@ -23,6 +25,7 @@ const EmployeeDashboard = () => {
     };
     fetchFeedbacks();
   }, [token, user?.id]);
+
 
   const handleLogout = () => {
     setToken(null);
@@ -41,7 +44,6 @@ const EmployeeDashboard = () => {
     }
   };
 
-
   const sentimentBorder = (s) =>
     s === "positive"
       ? "border-emerald-400"
@@ -49,7 +51,25 @@ const EmployeeDashboard = () => {
       ? "border-rose-400"
       : "border-gray-400";
 
- 
+
+  const displayedFeedbacks = React.useMemo(() => {
+    const copy = [...feedbacks];
+    switch (sortOption) {
+      case "ack":
+        return copy.filter((fb) => fb.acknowledged);
+      case "unack":
+        return copy.filter((fb) => !fb.acknowledged);
+      case "sent_pos":
+        return copy.filter((fb) => fb.sentiment === "positive");
+      case "sent_neg":
+        return copy.filter((fb) => fb.sentiment === "negative");
+      case "latest":
+      default:
+        return copy.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+    }
+  }, [sortOption, feedbacks]);
 
   if (loading) {
     return (
@@ -61,9 +81,10 @@ const EmployeeDashboard = () => {
     );
   }
 
+
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
-      {/* Header */}
+
       <header className="sticky top-0 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-white/5 border-b border-white/20 shadow-lg">
         <h1 className="text-xl font-bold tracking-wide">
           Welcome,&nbsp;{user?.name || user?.email}
@@ -76,13 +97,27 @@ const EmployeeDashboard = () => {
         </button>
       </header>
 
- 
-      <main className="p-6">
-        {feedbacks.length === 0 ? (
-          <p className="text-gray-400">You have no feedback yet.</p>
+      <main className="p-6 space-y-6">
+
+        <div className="flex justify-left">
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="bg-white/10 border border-white/20 text-blue-400 text-sm p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+          >
+            <option value="latest">Latest</option>
+            <option value="ack">Acknowledged</option>
+            <option value="unack">Not Acknowledged</option>
+            <option value="sent_pos">Sentiment Positive</option>
+            <option value="sent_neg">Sentiment Negative</option>
+          </select>
+        </div>
+
+        {displayedFeedbacks.length === 0 ? (
+          <p className="text-gray-400">No feedback matches this filter.</p>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {feedbacks.map((fb) => (
+            {displayedFeedbacks.map((fb) => (
               <div
                 key={fb.id}
                 className={`relative rounded-xl backdrop-blur-md bg-white/5 border border-white/20 p-6 shadow-lg border-l-4 ${sentimentBorder(

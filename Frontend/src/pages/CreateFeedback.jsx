@@ -100,19 +100,19 @@ const CreateFeedback = () => {
                 Employee <span className="text-red-400">*</span>
               </label>
               <select
-                name="employee_id"
-                value={form.employee_id}
-                onChange={handleChange}
-                required
-                className="w-full bg-white/10 border border-white/20 text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-              >
-                <option value="">— Select employee —</option>
-                {employees.map((e) => (
-                  <option key={e.id} value={e.id}>
-                    {e.name} ({e.email})
-                  </option>
-                ))}
-              </select>
+                  name="employee_id"
+                  value={form.employee_id}
+                  onChange={handleChange}
+                  required
+                  className="w-full bg-[#3a3636] text-white border border-white/20 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 appearance-none"
+                >
+                  <option value="" className="text-amber-50">— Select employee —</option>
+                  {employees.map((e) => (
+                    <option key={e.id} value={e.id} className="text-amber-50">
+                      {e.name} ({e.email})
+                    </option>
+                  ))}
+                </select>
             </div>
 
             {/* Feedback Text */}
