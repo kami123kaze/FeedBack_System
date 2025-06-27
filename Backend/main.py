@@ -57,6 +57,6 @@ db.close()
 
 @app.get("/")
 def read_root():
-    return {"msg": "Feedback System backend running 🚀"}
+    return {"msg": "Feedback System backend running 🚀 "}
 app.include_router(user_routes.router)
 app.include_router(feedback_routes.router)
