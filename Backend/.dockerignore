@@ -1,0 +1,5 @@
+
+.git
+frontend/
+node_modules/
+*.log
