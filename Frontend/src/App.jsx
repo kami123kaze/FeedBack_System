@@ -5,6 +5,7 @@ import ManagerDashboard from "./pages/ManagerDashboard";
 import ManageEmployees from './pages/ManageEmployees';
 import EmployeeDashboard from "./pages/EmployeeDashboard";
 import CreateFeedback from './pages/CreateFeedback';
+import UpdateFeedbackPage from './pages/UpdateFeedback';
 import  AuthContext  from "./context/AuthContext";
 import { useContext } from 'react';
 
@@ -20,6 +21,7 @@ export default function App() {
       <Route path="/Manager/employees" element={<ManageEmployees />}/>
       <Route path="/feedback/new" element={user?.role === "manager" ? <CreateFeedback /> : <Navigate to="/login" />}/>
 
+<Route path="/feedback/:id/edit" element={<UpdateFeedbackPage />} />
 
       <Route path="/Employee" element={<EmployeeDashboard />} />
     </Routes>

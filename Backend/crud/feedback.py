@@ -94,6 +94,16 @@ def update_feedback(
         fb.acknowledged = update_data.acknowledged
 
     db.commit()
-    db.refresh(fb)
+    fb = (
+    db.query(Feedback)
+    .options(joinedload(Feedback.tags))
+    .filter(Feedback.id == feedback_id)
+    .first()
+)    
     return fb
 
+def get_feedback_by_id(db: Session, feedback_id: int) -> Feedback:
+    fb = db.query(Feedback).filter(Feedback.id == feedback_id).first()
+    if not fb:
+        raise HTTPException(status_code=404, detail="Feedback not found")
+    return fb

@@ -2,6 +2,7 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import joinedload
 
 from backend.database import SessionLocal
 from backend.schemas.feedback import (
@@ -14,6 +15,7 @@ from backend.crud.feedback import (
     create_feedback,
     get_feedbacks_for_employee,  
     update_feedback,
+    get_feedback_by_id
 )
 from backend.dependencies import require_manager, get_current_user,require_employee
 from backend.models.feedback import Feedback
@@ -89,12 +91,17 @@ def update_feedback_route(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager),
 ):
-    updated_feedback = update_feedback(
-        db,
-        feedback_id,
-        current_user.id,
-        update_data,
+    # update + commit (inside helper)
+    update_feedback(db, feedback_id, current_user.id, update_data)
+
+    # 🔑 re-fetch the row with eager-loaded tags
+    updated_feedback = (
+        db.query(Feedback)
+        .options(joinedload(Feedback.tags))
+        .filter(Feedback.id == feedback_id)
+        .first()
     )
+
     return FeedbackOut.from_orm(updated_feedback)
 
 
@@ -128,3 +135,17 @@ def delete_feedback_route(
         raise HTTPException(status_code=403, detail="Not authorized")
     db.delete(fb)
     db.commit()
+    
+    
+    
+@router.get("/{feedback_id}", response_model=FeedbackOut)
+def get_single_feedback(
+    feedback_id: int,
+    db: Session = Depends(get_db),
+   
+):
+    
+    fb = get_feedback_by_id(db, feedback_id)
+
+
+    return fb

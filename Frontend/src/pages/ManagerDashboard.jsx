@@ -2,14 +2,17 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import client from "../api/clinet";
+import { useLocation } from "react-router-dom";
 
 const ManagerDashboard = () => {
+
   const { user, setToken, setUser } = useContext(AuthContext);
   const [employees, setEmployees]   = useState([]);
   const [feedbacks, setFeedbacks]   = useState([]);
   const [loading, setLoading]       = useState(true);
   const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
       const deleteFeedback = async (id) => {
         try {
@@ -17,14 +20,14 @@ const ManagerDashboard = () => {
           setFeedbacks((prev) => prev.filter((fb) => fb.id !== id));
           setSuccessMsg("✅ Feedback deleted successfully!");
 
-          setTimeout(() => setSuccessMsg(""), 3000); // clear after 3s
+          setTimeout(() => setSuccessMsg(""), 3000); 
         } catch (err) {
           console.error("Failed to delete feedback:", err);
         }
  };
 
 const editFeedback = (id) => {
-  navigate(`/feedback/edit/${id}`);
+  navigate(`/feedback/${id}/edit`);
 };
 
 const removeFromTeam = async (emp) => {
@@ -61,7 +64,7 @@ const removeFromTeam = async (emp) => {
     };
 
     fetchData();
-  }, [user?.id]);
+  }, [user?.id,location.key]);
 
 
   const handleLogout = () => {
