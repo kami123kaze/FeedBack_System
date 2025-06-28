@@ -7,10 +7,14 @@ from backend.models.tags import Tag
 
 from backend.routes import user as user_routes
 from backend.routes import feedback as feedback_routes
+from backend.routes import tags as tags_routes
 
 from backend.database import Base, engine
 
 from fastapi.middleware.cors import CORSMiddleware
+
+
+
 
 
 
@@ -60,3 +64,4 @@ def read_root():
     return {"msg": "Feedback System backend running 🚀 "}
 app.include_router(user_routes.router)
 app.include_router(feedback_routes.router)
+app.include_router(tags_routes.router)

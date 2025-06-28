@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
+import TagMultiSelect from "../components/TagMultiSelect";
 import client from "../api/clinet";
 
 const CreateFeedback = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+   const [allTags, setAllTags]     = useState([]); 
 
   const [employees, setEmployees] = useState([]);
   const [form, setForm] = useState({
@@ -13,7 +15,7 @@ const CreateFeedback = () => {
     text: "",
     sentiment: "positive",
     comment: "",
-    tag_ids: "",
+    tag_ids: [],
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -36,7 +38,11 @@ const CreateFeedback = () => {
     };
     fetchTeam();
   }, [user.id]);
-
+  useEffect(() => {
+    client.get("/tags/")
+      .then(res => setAllTags(res.data))
+      .catch(err => console.error("Failed to fetch tags", err));
+  }, []);
   const handleChange = (e) =>
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
 
@@ -53,8 +59,6 @@ const CreateFeedback = () => {
         sentiment: form.sentiment,
         comment: form.comment || null,
         tag_ids: form.tag_ids
-          ? form.tag_ids.split(",").map((id) => Number(id.trim()))
-          : [],
       });
       navigate("/manager");
     } catch (err) {
@@ -166,19 +170,16 @@ const CreateFeedback = () => {
             </div>
 
             {/* Tags */}
-            <div>
-              <label className="block text-sm mb-1 font-medium text-white/90">
-                Tag IDs (comma-separated)
-              </label>
-              <input
-                type="text"
-                name="tag_ids"
-                value={form.tag_ids}
-                onChange={handleChange}
-                placeholder="e.g. 1, 3, 7"
-                className="w-full bg-white/10 border border-white/20 text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1 text-white/90">
+                      Tags
+                    </label>
+                    <TagMultiSelect
+                      value={form.tag_ids}
+                      onChange={(ids) => setForm(prev => ({ ...prev, tag_ids: ids }))}
+                      options={allTags}
+                    />
+                  </div>
 
             {/* Submit */}
             <button

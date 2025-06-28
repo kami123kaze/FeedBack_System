@@ -91,10 +91,10 @@ def update_feedback_route(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_manager),
 ):
-    # update + commit (inside helper)
+
     update_feedback(db, feedback_id, current_user.id, update_data)
 
-    # 🔑 re-fetch the row with eager-loaded tags
+
     updated_feedback = (
         db.query(Feedback)
         .options(joinedload(Feedback.tags))
@@ -149,3 +149,5 @@ def get_single_feedback(
 
 
     return fb
+
+
