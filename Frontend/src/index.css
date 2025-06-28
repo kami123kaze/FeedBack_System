@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+.react-select__menu {
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 40;
+}
+
+.react-select__option {
+  background-color: transparent;
+  color: white;
+}
+
+.react-select__option--is-focused {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.react-select__multi-value {
+  background-color: #333;
+  color: white;
+}
