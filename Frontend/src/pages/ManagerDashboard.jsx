@@ -18,7 +18,7 @@ const ManagerDashboard = () => {
     try {
       await client.delete(`/feedbacks/${id}`);
       setFeedbacks((prev) => prev.filter((fb) => fb.id !== id));
-      setSuccessMsg("✅ Feedback deleted successfully!");
+      setSuccessMsg(" Feedback deleted successfully!");
       setTimeout(() => setSuccessMsg(""), 3000);
     } catch (err) {
       console.error("Failed to delete feedback:", err);
@@ -83,7 +83,7 @@ const ManagerDashboard = () => {
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
       {/* Header */}
-      <header className="sticky top-0 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-white/5 border-b border-white/20 shadow-lg">
+      <header className="sticky top-0  z-30 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-white/5 border-b border-white/20 shadow-lg">
         <h1 className="text-xl font-bold tracking-wide">
           Manager&nbsp;&middot;&nbsp;{user?.name || user?.email}
         </h1>
