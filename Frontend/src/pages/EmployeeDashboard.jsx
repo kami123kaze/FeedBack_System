@@ -157,7 +157,7 @@ const EmployeeDashboard = () => {
                 </ul>
 
 
-                <div className="absolute bottom-4 right-4 flex gap-2">
+                <div className="absolute bottom-4 right-4 flex flex-col gap-2">
                   {!fb.acknowledged && (
                     <button
                       onClick={() => acknowledgeFeedback(fb.id)}
