@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext,useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import client from "../api/clinet";
+import { exportNodeToPdf } from "../utils/exportPdf";
 
 const ManagerDashboard = () => {
   const { user, setToken, setUser } = useContext(AuthContext);
@@ -11,6 +12,7 @@ const ManagerDashboard = () => {
   const [successMsg, setSuccessMsg] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
+  const pdfRefs = useRef({});
 
   const deleteFeedback = async (id) => {
     try {
@@ -162,6 +164,7 @@ const ManagerDashboard = () => {
               {feedbacks.map((fb) => (
                 <div
                   key={fb.id}
+                  ref={(el) => (pdfRefs.current[fb.id] = el)}
                   className="relative rounded-xl backdrop-blur-md bg-white/5 border border-white/20 p-4 shadow-lg"
                 >
                   {/* Edit / Delete buttons */}
@@ -242,7 +245,15 @@ const ManagerDashboard = () => {
                         </span>
                       </div>
                     </div>
-
+                       {/* Download PDF button */}
+                  <button
+                    onClick={() =>
+                      exportNodeToPdf(pdfRefs.current[fb.id], `feedback-${fb.id}`)
+                    }
+                    className="absolute bottom-4 left-4 rounded-md bg-slate-700 px-3 py-1 text-sm text-white hover:bg-slate-600 transition"
+                  >
+                    Download PDF
+                  </button>
                 </div>
               ))}
             </div>

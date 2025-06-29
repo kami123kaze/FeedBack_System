@@ -1,16 +1,18 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 import client from "../api/clinet";
+import { exportNodeToPdf } from "../utils/exportPdf";      
 
 const EmployeeDashboard = () => {
   const { user, token, setToken, setUser } = useContext(AuthContext);
   const [feedbacks, setFeedbacks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [sortOption, setSortOption] = useState("latest"); 
+  const [sortOption, setSortOption] = useState("latest");
+  const pdfRefs = useRef({});                               
   const navigate = useNavigate();
 
-  
+
   useEffect(() => {
     const fetchFeedbacks = async () => {
       if (!token || !user?.id) return;
@@ -51,7 +53,6 @@ const EmployeeDashboard = () => {
       ? "border-rose-400"
       : "border-gray-400";
 
-
   const displayedFeedbacks = React.useMemo(() => {
     const copy = [...feedbacks];
     switch (sortOption) {
@@ -71,6 +72,7 @@ const EmployeeDashboard = () => {
     }
   }, [sortOption, feedbacks]);
 
+ 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#0d0d0d]">
@@ -81,9 +83,9 @@ const EmployeeDashboard = () => {
     );
   }
 
-
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white">
+
 
       <header className="sticky top-0 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-white/5 border-b border-white/20 shadow-lg">
         <h1 className="text-xl font-bold tracking-wide">
@@ -120,10 +122,12 @@ const EmployeeDashboard = () => {
             {displayedFeedbacks.map((fb) => (
               <div
                 key={fb.id}
+                ref={(el) => (pdfRefs.current[fb.id] = el)}      /* NEW */
                 className={`relative rounded-xl backdrop-blur-md bg-white/5 border border-white/20 p-6 shadow-lg border-l-4 ${sentimentBorder(
                   fb.sentiment
                 )}`}
               >
+
                 <p className="text-sm text-gray-300 mb-1">
                   <strong>Manager:</strong>{" "}
                   {fb.manager_name || `#${fb.manager_id}`}
@@ -152,14 +156,28 @@ const EmployeeDashboard = () => {
                   </li>
                 </ul>
 
-                {!fb.acknowledged && (
+
+                <div className="absolute bottom-4 right-4 flex gap-2">
+                  {!fb.acknowledged && (
+                    <button
+                      onClick={() => acknowledgeFeedback(fb.id)}
+                      className="rounded-md bg-amber-500 px-3 py-1 text-sm font-medium text-black hover:bg-amber-600 transition-colors"
+                    >
+                      Acknowledge
+                    </button>
+                  )}
                   <button
-                    onClick={() => acknowledgeFeedback(fb.id)}
-                    className="absolute bottom-4 right-4 rounded-md bg-amber-500 px-3 py-1 text-sm font-medium text-black hover:bg-amber-600 transition-colors"
+                    onClick={() =>
+                      exportNodeToPdf(
+                        pdfRefs.current[fb.id],
+                        `feedback-${fb.id}`
+                      )
+                    }
+                    className="rounded-md bg-slate-700 px-3 py-1 text-sm text-white hover:bg-slate-600 transition"
                   >
-                    Acknowledge
+                    Download&nbsp;PDF
                   </button>
-                )}
+                </div>
               </div>
             ))}
           </div>
