@@ -10,7 +10,7 @@
   
 ## Demo Videos
 
-* **Product Demo (≤5 min):** [WILL ADD VID]()
+* **Product Demo (≤5 min):** [[Link](https://www.loom.com/share/140a7a31fb7544b390324f564e848147?sid=5c87e0a3-42fd-473c-85ef-c9045d22bb64)]
 * **Code Walkthrough (≤10 min):** [WILL ADD VID]()
 
 ## Quick Start
